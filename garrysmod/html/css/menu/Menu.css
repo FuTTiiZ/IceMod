@@ -11,6 +11,20 @@ BODY
 	outline: none;
 }
 
+#bgImgElm {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  /*-webkit-filter: blur(5px);
+  /*filter: blur(10px);*/
+  opacity: 0.2;
+  z-index: -1;
+}
+
+#bgTxtElm {
+
+}
+
 INPUT
 {
 	-webkit-user-select: auto;
@@ -39,7 +53,7 @@ DIV.page
 	left: 0px;
 	right: 0px;
 	top: 0px;
-	bottom: 50px;
+  bottom: 50px;
 }
 
 UL.category
@@ -332,7 +346,7 @@ div.main-menu {
 }
 
 .main-list li:first-child img {
-  
+
 }
 
 .main-list li span {

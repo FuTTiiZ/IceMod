@@ -1,7 +1,16 @@
 <html>
 <head>
 
-	<title>Garry's Mod Main Menu - IFN MOD</title>
+  <title>Garry's Mod Main Menu - IFN MOD</title>
+  <script>
+    var InGame = false
+    var mmLoads = 0
+
+    function mmJoinServerHandler() {
+      mmLoads++
+      mainMenuLoadHandler()
+    }
+  </script>
 
 	<link rel="stylesheet" type="text/css" href="css/menu/Menu.css" />
 	<link rel="stylesheet" type="text/css" href="css/menu/NavBar.css" />
@@ -26,6 +35,38 @@
   
   <script type="text/javascript" src="js/menu/control.Servers.js"></script>
 
+  <script>
+    const ifnLoadNames = [
+      'clonewars',
+      'militaryrp',
+      //'imperial',
+      //'battlefront',
+      'cityrp',
+      'darkrp'
+    ]
+
+    var mmLastLoad = mmLoads
+    function mainMenuLoadHandler() {
+      if (mmLoads === mmLastLoad) return
+
+      mmLoads++
+      mmLastLoad = mmLoads
+      loadRandImg()
+    }
+
+    function loadRandImg() {
+      const randImage = randServer + l_bgImages[Math.floor(Math.random() * l_bgImages.length)]
+      console.log('[IFN Menu] Loaded BG: ' + randImage)
+      $('#bgImgElm').attr('src', randImage)
+    }
+
+    const randServer = 'https://gmod.icefuse.net/content/' + ifnLoadNames[Math.floor(Math.random() * ifnLoadNames.length)] + '/loading_screen/'
+    const bgImages = document.createElement('script')
+    bgImages.src = randServer + 'js/config.js'
+    bgImages.onload = mmJoinServerHandler
+    document.getElementsByTagName('head')[0].appendChild(bgImages)
+  </script>
+
   <ul style="position: absolute; display: none" id="ifnCache"></ul>
   <script>
     const ifnCache = $('#ifnCache')
@@ -46,7 +87,7 @@
 
     function ifnServerCahce(servers) {
       //console.log(' ')
-      console.log('[IFN Menu] Refreshing server data...')
+      console.log('[IFN Menu] Refreshing server data')
 
       servers.forEach(function(v) {
         const ip = v[1] + ':' + v[2]
@@ -70,6 +111,7 @@
     }
   </script>
 
+
 	<script type="text/javascript" src="js/menu/control.Addons.js"></script>
 	<script type="text/javascript" src="js/menu/control.Demos.js"></script>
 	<script type="text/javascript" src="js/menu/control.Saves.js"></script>
@@ -84,12 +126,14 @@
 </head>
 
 <body ng-app="MenuApp" ng-controller="MenuController">
-
   <div id="version" ng-click="ShowNews()" ng-show="Branch"><span ng-show="Branch != 'unknown'">You are on the {{Branch}} branch. Click here to find out more. ( </span>IFN {{Version}}<span ng-show="Branch != 'unknown'"> )</span></div>
 
   <div ng-view>
 
   </div>
+
+  <script ng-Show="InGame">InGame = true</script>
+  <script ng-Show="!InGame">InGame = false</script>
 
   <div id="NavBar">
 
@@ -186,5 +230,8 @@
 
   </ul>
 
+  <img ng-show="!InGame" id="bgImgElm" onerror="mainMenuLoadHandler()" onload="mainMenuLoadHandler()">
+  <!--img id="bgTxtElm" src="https://i.imgur.com/UvPBceU.png"-->
+  <script ng-show="!InGame">lua.PlaySound('music/ifn-music.mp3')</script>
 </body>
 </html>

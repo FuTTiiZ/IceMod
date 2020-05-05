@@ -60,13 +60,14 @@ function DrawBackground()
 			Think( Outgoing )
 			Render( Outgoing )
 
-		end
+    end
+    
+    surface.SetDrawColor(28, 29, 31, 255)
+    surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 
 	end
 
-	if IsInGame() then surface.SetMaterial( MenuGradient ) end
-	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.DrawTexturedRect( 0, 0, 1024, ScrH() )
+	--if IsInGame() then surface.SetMaterial( MenuGradient ) end
 
 end
 
@@ -90,7 +91,7 @@ function ChangeBackground( currentgm )
 	if ( currentgm && currentgm == LastGamemode ) then return end
 	if ( currentgm ) then LastGamemode = currentgm end
 
-  local img = 'html/ifn.png'
+  local img = 'html/ifn.png' --#1c1d1f
 	if ( !img ) then return end
 
 	-- Remove the texture from memory
@@ -133,10 +134,12 @@ function ChangeBackground( currentgm )
 
 	if ( Active.Ratio < ScrW() / ScrH() ) then
 
-		Active.Size = Active.Size + ( ( ScrW() / ScrH() ) - Active.Ratio )
+    Active.Size = 0.0 --Active.Size + ( ( ScrW() / ScrH() ) - Active.Ratio )
 
 	end
   --if currentgm ~= nil then ChangeBackground() end
 end
+
+
 
 --RunConsoleCommand('gamemode', 'ifn')

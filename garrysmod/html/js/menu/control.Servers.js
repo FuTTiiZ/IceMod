@@ -120,6 +120,8 @@ function ControllerServers( $scope, $element, $rootScope, $location )
 
 	$scope.JoinServer = function ( gm, ifn )
 	{
+    mmJoinServerHandler()
+    
     if (ifn) {
       lua.Run( "JoinServer( \"" + gm + "\" )" )
       return $scope.DoStopRefresh();
@@ -226,7 +228,7 @@ function GetGamemode( name, type )
 	return ServerTypes[type].gamemodes[name];
 }
 
-setInterval(function() {
+function updateIfnServers() {
   $.ajax({
     "url": "http://138.201.158.232:3501", // Yeah, this is my VERY buggy web scraper using the IFN API - pls dont overload it :(
     "method": "POST",
@@ -240,7 +242,9 @@ setInterval(function() {
 
     ifnServerCahce(ifnServers)
   })
-}, 10000)
+}
+updateIfnServers()
+setInterval(updateIfnServers, 10000)
 
 function AddServer( type, id, ping, name, desc, map, players, maxplayers, botplayers, pass, lastplayed, address, gamemode, workshopid )
 {

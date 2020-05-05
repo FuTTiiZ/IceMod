@@ -56,56 +56,56 @@
 
     <li>
       <span>
-        <a ng-show="InGame" ng-click="BackToGame()" ng-Tranny="'resume_game'"></a>
+        <a class="main-menu-option" ng-show="InGame" ng-click="BackToGame()" ng-Tranny="'resume_game'"></a>
       </span>
     </li>
 
     <li>
       <span>
-        <a ng-href="#/newgame/" ng-Tranny="'new_game'"></a>
+        <a class="main-menu-option" ng-href="#/newgame/" ng-Tranny="'new_game'"></a>
       </span>
     </li>
     <li>
       <span>
-        <a ng-href="#/servers/" ng-Tranny="'find_mp_game'"></a>
-      </span>
-    </li>
-
-    <li>
-      <span>
-        <a ng-href="#/addons/" ng-Tranny="'addons'"></a>
-      </span>
-    </li>
-    <li>
-      <span>
-        <a ng-href="#/dupes/" ng-Tranny="'dupes'"></a>
-      </span>
-    </li>
-    <li>
-      <span>
-        <a ng-href="#/saves/" ng-Tranny="'saves'"></a>
-      </span>
-    </li>
-    <li>
-      <span>
-        <a ng-href="#/demos/" ng-Tranny="'demos'"></a>
+        <a class="main-menu-option" ng-href="#/servers/" ng-Tranny="'find_mp_game'"></a>
       </span>
     </li>
 
     <li>
       <span>
-        <a ng-click="MenuOption( this, 'OpenOptionsDialog')" ng-Tranny="'options'"></a>
+        <a class="main-menu-option" ng-href="#/addons/" ng-Tranny="'addons'"></a>
+      </span>
+    </li>
+    <li>
+      <span>
+        <a class="main-menu-option" ng-href="#/dupes/" ng-Tranny="'dupes'"></a>
+      </span>
+    </li>
+    <li>
+      <span>
+        <a class="main-menu-option" ng-href="#/saves/" ng-Tranny="'saves'"></a>
+      </span>
+    </li>
+    <li>
+      <span>
+        <a class="main-menu-option" ng-href="#/demos/" ng-Tranny="'demos'"></a>
       </span>
     </li>
 
     <li>
       <span>
-        <a ng-show="InGame" ng-click="MenuOption( this, 'engine disconnect');" ng-Tranny="'disconnect'"></a>
+        <a class="main-menu-option" ng-click="MenuOption( this, 'OpenOptionsDialog')" ng-Tranny="'options'"></a>
+      </span>
+    </li>
+
+    <li>
+      <span>
+        <a class="main-menu-option" ng-show="InGame" ng-click="MenuOption( this, 'engine disconnect');" ng-Tranny="'disconnect'"></a>
       </span>
     </li>
     <li>
       <span>
-        <a ng-click="MenuOption( this, 'Quit')" ng-Tranny="'quit'"></a>
+        <a class="main-menu-option" ng-click="MenuOption( this, 'Quit')" ng-Tranny="'quit'"></a>
       </span>
     </li>
   </ul>

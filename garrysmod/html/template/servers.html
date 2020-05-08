@@ -16,12 +16,15 @@
 
         <li style="cursor: default;">Icefuse Servers</li>
         <ul id="ifnServerList">
-          <li>foo</li>
+          <li>Couldn't get Icefuse server data!</li>
         </ul>
 
         <script>
-          $('#ifnServerList').html(ifnCache.html())
-          
+          function refreshIfnServersHtml() {
+            $('#ifnServerList').html(ifnCache.html())
+          }
+          refreshIfnServersHtml()
+
           function updateServer(server, plys) {
             $('#'+ server +' #plys').html(plys)
           }

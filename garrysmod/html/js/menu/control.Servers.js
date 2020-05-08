@@ -5,8 +5,29 @@ var DigestUpdate = 0;
 var ServerTypes = {};
 var FirstTime = true;
 
+function updateIfnServers() {
+  //if (!Scope || !Scope.Refreshing.internet) return
+  if (gScope && gScope.InGame) return
+
+  $.ajax({
+    "url": "http://138.201.158.232:3501", // Yeah, this is my VERY buggy web scraper using the IFN API - pls dont overload it :(
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "text/plain"
+    },
+    "data": "https://icefuse.net/api/servers/result_main.json",
+  }).done(function(response) {
+    const ifnServers = JSON.parse(response).filter(function(v) {return v[0] === 1})
+
+    ifnServerCache(ifnServers)
+  })
+}
+//setInterval(updateIfnServers, 10000)
+
 function ControllerServers( $scope, $element, $rootScope, $location )
 {
+  updateIfnServers()
 	Scope = $rootScope;
 	Scope.ShowTab = 'internet';
 
@@ -39,20 +60,27 @@ function ControllerServers( $scope, $element, $rootScope, $location )
 		//
 		// Get the server list from the engine
 		//
-		lua.Run( "GetServers( '"+Scope.ServerType+"', '"+RequestNum[Scope.ServerType ]+"' )" );
+		lua.Run( "GetServers( '" + Scope.ServerType + "', '" + RequestNum[ Scope.ServerType ] + "' )" );
 
-		Scope.Refreshing[Scope.ServerType] = "true";
+		Scope.Refreshing[ Scope.ServerType] = "true";
 		UpdateDigest( Scope, 50 );
 	}
 
-	$scope.SelectServer = function( server )
+	$scope.SelectServer = function( server, event )
 	{
+		if ( event && event.which != 1 )
+		{
+			lua.Run( "SetClipboardText( '" + server.name.replace( "'", "\\'") + " @ " + server.address + " - " + server.steamID + " (Anon:" + server.isAnon + ")' )" );
+			event.preventDefault();
+			return;
+		}
+
 		Scope.CurrentGamemode.Selected = server;
 
 		if ( !IN_ENGINE )
 			SetPlayerList( server.address, { "1": { "time": 3037.74, "score": 5, "name": "Sethxi" }, "2": { "time": 2029.34, "score": 0, "name": "RedDragon124" }, "3": { "time": 1405.02, "score": 0, "name": "Joke (0_0)" }, "4": { "time": 462.15, "score": 0, "name": "TheAimBot" }, "5": { "time": 301.32, "score": 0, "name": "DesanPL"} } );
 
-		lua.Run( "GetPlayerList( '"+server.address+"' )" );
+		lua.Run( "GetPlayerList( '" + server.address + "' )" );
 
 		if ( server.DoubleClick )
 		{
@@ -118,19 +146,13 @@ function ControllerServers( $scope, $element, $rootScope, $location )
 		return gm.name;
 	}
 
-	$scope.JoinServer = function ( gm, ifn )
+	$scope.JoinServer = function ( srv )
 	{
     mmJoinServerHandler()
-    
-    if (ifn) {
-      lua.Run( "JoinServer( \"" + gm + "\" )" )
-      return $scope.DoStopRefresh();
-    }
+		if ( srv.password )
+			lua.Run( "RunConsoleCommand( \"password\", \"" + srv.password + "\" )" )
 
-		if ( gm.password )
-			lua.Run( "RunConsoleCommand( \"password\", \"" + gm.password + "\" )" )
-
-		lua.Run( "JoinServer( \"" + gm.address + "\" )" )
+		lua.Run( "JoinServer( \"" + srv.address + "\" )" )
 		$scope.DoStopRefresh();
 	}
 
@@ -218,6 +240,7 @@ function GetGamemode( name, type )
 		servers:		[],
 		num_servers:	0,
 		num_players:	0,
+		sort_players:	0,
 		OrderByMain:	'recommended',
 		OrderBy:		['recommended', 'ping', 'address'],
 		info:			GetGamemodeInfo( name )
@@ -228,25 +251,7 @@ function GetGamemode( name, type )
 	return ServerTypes[type].gamemodes[name];
 }
 
-function updateIfnServers() {
-  $.ajax({
-    "url": "http://138.201.158.232:3501", // Yeah, this is my VERY buggy web scraper using the IFN API - pls dont overload it :(
-    "method": "POST",
-    "timeout": 0,
-    "headers": {
-      "Content-Type": "text/plain"
-    },
-    "data": "https://icefuse.net/api/servers/result_main.json",
-  }).done(function(response) {
-    const ifnServers = JSON.parse(response).filter(function(v) {return v[0] === 1})
-
-    ifnServerCahce(ifnServers)
-  })
-}
-updateIfnServers()
-setInterval(updateIfnServers, 10000)
-
-function AddServer( type, id, ping, name, desc, map, players, maxplayers, botplayers, pass, lastplayed, address, gamemode, workshopid )
+function AddServer( type, id, ping, name, desc, map, players, maxplayers, botplayers, pass, lastplayed, address, gamemode, workshopid, isAnon, steamID )
 {
 	if ( id != RequestNum[ type ] ) return;
 
@@ -268,10 +273,10 @@ function AddServer( type, id, ping, name, desc, map, players, maxplayers, botpla
 		gamemode:		gamemode,
 		password:		'',
 		workshopid:		workshopid,
+		isAnon:			isAnon,
+		steamID:		steamID,
 		favorite:		false // This needs to be set properly
 	};
-
-  //if (ifnServers[address]) ifnCounts[ifnServers[address]] = data.players
 
 	if ( type == "favorite" ) {
 		data.favorite = true; // This needs to be set properly
@@ -283,6 +288,7 @@ function AddServer( type, id, ping, name, desc, map, players, maxplayers, botpla
 	if ( data.players == 0 ) data.recommended += 75; // Server is empty
 	if ( data.players >= data.maxplayers ) data.recommended += 100; // Server is full, can't join it
 	if ( data.pass ) data.recommended += 300; // Password protected, can't join it
+	if ( data.isAnon ) data.recommended += 1000; // Anonymous server
 
 	// The first few bunches of players reduce the impact of the server's ping on the ranking a little
 	if ( data.players >= 4 ) data.recommended -= 10;
@@ -302,11 +308,13 @@ function AddServer( type, id, ping, name, desc, map, players, maxplayers, botpla
 	gm.num_servers += 1;
 	gm.num_players += data.players
 
+	if ( !data.isAnon ) gm.sort_players += data.players
+
 	gm.element_class = "";
 	if ( gm.num_players == 0 ) gm.element_class = "noplayers";
 	if ( gm.num_players > 50 ) gm.element_class = "lotsofplayers";
 
-	gm.order = gm.num_players + Math.random();
+	gm.order = gm.sort_players; // + Math.random();
 
 	UpdateDigest( Scope, 50 );
 
@@ -331,3 +339,59 @@ function SetPlayerList( serverip, players )
 
 	UpdateDigest( Scope, 50 );
 }
+
+function GetHighestKey( obj )
+{
+	var h = 0;
+	var v = "";
+
+	for ( k in obj )
+	{
+		if ( obj[k] > h )
+		{
+			h = obj[k];
+			v = k;
+		}
+	}
+
+	return v;
+}
+
+//
+// Updates information about gamemodes we don't have using server info
+//
+function UpdateGamemodeInfo( server )
+{
+	gi = GetGamemodeInfo( server.gamemode )
+
+	//
+	// Use the most common title
+	//
+	if ( !gi.titles ) gi.titles = {}
+
+	// First try to see if we have a capitalized version already (i.e. sandbox should be Sandbox)
+	if ( server.desc == server.gamemode.toLowerCase() ) {
+		var names = Object.keys( gi.titles );
+		for ( var i = 0; i < names.length; i++ ) {
+			var name = names[ i ];
+			if ( name != name.toLowerCase() && name.toLowerCase() == server.gamemode.toLowerCase() ) {
+				server.desc = name;
+				break;
+			}
+		}
+	}
+
+	if ( !gi.titles[ server.desc ] ) { gi.titles[ server.desc ] = 1; } else { gi.titles[ server.desc ]++; }
+	gi.title = GetHighestKey( gi.titles );
+
+	//
+	// Use the most common workshop id
+	//
+	//if ( server.workshopid != "" )
+	{
+		if ( !gi.wsid ) gi.wsid = {}
+		if ( !gi.wsid[ server.workshopid ] ) { gi.wsid[ server.workshopid ] = 1; } else { gi.wsid[ server.workshopid ]++; }
+		gi.workshopid = GetHighestKey( gi.wsid );
+	}
+}
+

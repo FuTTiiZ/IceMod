@@ -3,7 +3,6 @@
 
   <title>Garry's Mod Main Menu - IFN MOD</title>
   <script>
-    var InGame = false
     var mmLoads = 0
 
     function mmJoinServerHandler() {
@@ -85,9 +84,9 @@
       return '#3498db'
     }
 
-    function ifnServerCahce(servers) {
+    function ifnServerCache(servers) {
       //console.log(' ')
-      console.log('[IFN Menu] Refreshing server data')
+      //console.log('[IFN Menu] Refreshing server data')
 
       servers.forEach(function(v) {
         const ip = v[1] + ':' + v[2]
@@ -106,8 +105,7 @@
         }
         //console.log('JoinServer(\''+ ip +'\')')
       })
-
-      //console.log('[IFN Menu] Refreshed servers!')
+      console.log('[IFN Menu] Refreshed server data')
     }
   </script>
 

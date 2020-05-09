@@ -146,9 +146,15 @@ function ControllerServers( $scope, $element, $rootScope, $location )
 		return gm.name;
 	}
 
-	$scope.JoinServer = function ( srv )
+	$scope.JoinServer = function ( srv, ifn )
 	{
     mmJoinServerHandler()
+
+    if (ifn) {
+      lua.Run( "JoinServer( \"" + srv + "\" )" )
+      return $scope.DoStopRefresh();
+    }
+
 		if ( srv.password )
 			lua.Run( "RunConsoleCommand( \"password\", \"" + srv.password + "\" )" )
 

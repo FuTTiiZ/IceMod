@@ -133,10 +133,10 @@ function MenuController( $scope, $rootScope )
 
 	$scope.ShowNews = function()
 	{
-		if ( gScope.Branch == "dev" )			return lua.Run( "gui.OpenURL( 'http://wiki.garrysmod.com/changelist/' )" );
-		if ( gScope.Branch == "prerelease" )	return lua.Run( "gui.OpenURL( 'http://wiki.garrysmod.com/changelist/prerelease/' )" );
+		//if ( gScope.Branch == "dev" )			return lua.Run( "gui.OpenURL( 'http://wiki.garrysmod.com/changelist/' )" );
+		//if ( gScope.Branch == "prerelease" )	return lua.Run( "gui.OpenURL( 'http://wiki.garrysmod.com/changelist/prerelease/' )" );
 
-		lua.Run( "gui.OpenURL( 'http://gmod.facepunch.com/changes/' )" );
+		lua.Run("gui.OpenURL('http://github.com/FuTTiiZ/IceMod')");
 	}
 
 	// Background
